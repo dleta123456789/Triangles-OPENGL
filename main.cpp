@@ -285,8 +285,10 @@ int main()
 
 		/*
 		* render
+		* MAke sure that clearcolor is before anything else as it will be creating the background
 		*/
-		//glclear will clear the buffer with the collor given in glclearColor
+
+		//glclear will clear the buffer with the collor given in glclearColor. It is also coloring the background piels
 		//The parameters are RGBA meaning Red,Green,Blue and Alpha
 		glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
