@@ -98,14 +98,26 @@ int main()
 	* X,Y,Z coordinates of each vertice
 	* Range is from -1.0f to 1.0f on all three of these
 	* With three vertices we will have created a traingle
-	* With two it would be a line.
+	* With four we will be creating a rectangle 
+	* 
 	*/
 	float vertices[] = {
-	-0.3f, -0.7f, 0.0f,
-	0.2f, -0.4f, 0.0f,
-	0.8f, 0.5f, 0.0f
+		0.4f, 0.2f, 0.0f, // top right
+		0.1f, -0.4f, 0.0f, // bottom right
+		-0.2f, -0.6f, 0.0f, // bottom left
+		-0.8f, 0.5f, 0.0f // top left
 	};
 
+	/*
+	* Indices will be used to point the correct points in the vertices array
+	* Without it, we cannot tell which point is for what triangle
+	* We start from 0 as 0 is the first element in the array.
+	*/
+	unsigned int indices[] = {
+		0, 1, 3, // first triangle
+		1, 2, 3 // second triangle
+	};
+	
 	/*
 	*Create a Vertex Buffer Object which will store the vertices in GPU memory.
 	* GlgenBuffer will return list of intergers not used as buffer names.
@@ -137,7 +149,7 @@ int main()
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 	
-	
+
 	/*
 	*Create the Vertx array object
 	* As we are using coreOpenGL we nned to use this or OpenGL will not work at all
@@ -156,6 +168,20 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+	/*
+	* Now we need to create the EBO object and then give it a id. Similar to VBO and VAO
+	* Order should be VBO, VAO and then EBO
+	*/
+	unsigned int EBO;
+	glGenBuffers(1, &EBO);
+	
+	/*
+	* Just like with VBO we are going to bind and then add it to the Buffer.
+	* diffrence is that we are going to use Gl_element array buffer instead of GL_Array Buffer.
+	*/
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
+		GL_STATIC_DRAW);
 	/*
 	*set vertex attributes pointers
 	*We have to tell  OpenGL how to interpret the  vertex data we have provided to it and then enable it
@@ -273,9 +299,20 @@ int main()
 	*/
 
 	/*
+	*If we want to see the verticesw only then we can use wirefram to see how the objects are connected
+	* We can use polygon mode to see that
+	* Parameters:
+	* if we want to apply it to front and back
+	* if we want to fill or draw lines
+	* Comment it out to go back to normal mode
+	*/
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	/*
 	* Code to only allow explict closing.
 	* It is also the render loop
 	*/
+
+
 	while (!glfwWindowShouldClose(window))
 	{
 		/*
@@ -290,17 +327,38 @@ int main()
 
 		//glclear will clear the buffer with the collor given in glclearColor. It is also coloring the background piels
 		//The parameters are RGBA meaning Red,Green,Blue and Alpha
-		glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		//Draw Vertix
+
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		/*
+		* GL Draw Array has been commented out as we are going to use EBO which will 
+		remove the overhead of having same vertices for many triangles.
+		*/
+		//glDrawArrays(GL_TRIANGLES, 0, 3); 
+
+		
+		/*
+		*We are going to use GL Draw element to get draw the shape 
+		* Paramenters:
+		* The mode in which we want to draw which is triangle.
+		Do note that every object which is made is made with the help of triangles.
+		Triangles cannot be  non planar.Meaning its does not exist in a single plane
+		We are going to render 2d images even if the object itself is a 3d as we are looking thorugh a screen.
+		secoondly its more effiecent the less computation we do to compute a single object,
+		we can display objects faster and in larger number.
+		* We specify the number of elements which are the 6 indices we had.
+		* We specify the type of indices which is unisgingned int.
+		* Last is the offset in EBO or not using EBO so we set it to 0 as we have no offset
+		*/
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		
 		
 		/*
 		*check call events
 		*/
-
 		//swapbuffers will swap the color buffer
 		glfwSwapBuffers(window);
 		//Pollevents check if window has been closed or not.
