@@ -10,3 +10,5 @@ To run any one of the excersie questions simply exlude all cpp files excluding m
 You could also simply create a new project with the starter code and copy paste the excersie code to test it out.
 
 EBO is not used in Excerise codes for now.
+
+main.cpp is the base code for creating a triangle using VBO,VAO and EBO.
