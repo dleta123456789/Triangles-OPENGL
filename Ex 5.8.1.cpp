@@ -235,7 +235,7 @@ int main()
 			infoLog << std::endl;
 	}
 	/*
-	*çompile the fragment shader.
+	*Ã§ompile the fragment shader.
 	* Similar to vertix shader
 	* create a fragment object
 	* create the fragment shader
